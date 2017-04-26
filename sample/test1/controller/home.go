@@ -3,7 +3,7 @@ package controller
 import (
 	"net/http"
 
-	"dev.hexasoftware.com/stdio/webu"
+	"dev.hexasoftware.com/hxs/webu"
 )
 
 type Home struct {

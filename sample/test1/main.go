@@ -4,8 +4,8 @@ import (
 	"log"
 	"net/http"
 
-	"dev.hexasoftware.com/stdio/webu"
-	"dev.hexasoftware.com/stdio/webu/sample/test1/controller"
+	"dev.hexasoftware.com/hxs/webu"
+	"dev.hexasoftware.com/hxs/webu/sample/test1/controller"
 )
 
 func main() {
