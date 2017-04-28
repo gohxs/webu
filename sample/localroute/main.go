@@ -3,7 +3,6 @@ package main
 import (
 	"log"
 	"net/http"
-	"strings"
 
 	"dev.hexasoftware.com/hxs/webu"
 )
@@ -11,10 +10,11 @@ import (
 // The Routing definition for controller
 func InitHome(m webu.Muxer) {
 
+	log.Println("Muxer name:", m.Pattern())
 	h := &HomeHandler{}
 	indexHandler := &webu.MethodHandler{Get: h.Index, Post: h.POSTIndex}
 	m.Handle("/", indexHandler)
-	m.Handle("/special/", webu.SpecialHandler("/home/special/", h.Special))
+	m.Handle("/special/", webu.SpecialHandler(m.Pattern("/special/"), h.Special))
 }
 
 type HomeHandler struct{}
@@ -48,9 +48,12 @@ func main() {
 
 	// golang mux compatible
 	chain := webu.NewChain(webu.ChainLogger("HOME"))
+	muxer := webu.NewMuxHelper(mux, "/", chain)
+
+	subMuxer := muxer.Group("/home").Group("/test").Group("sub")
 
 	// Controller somehow
-	InitHome(&webu.SubMux{mux, "/home", chain})
+	InitHome(subMuxer)
 
 	// Catch all
 	//mux.Handle("/", webu.LogHandler(http.HandlerFunc(notFoundHandler)))
@@ -101,7 +104,6 @@ func notFoundHandler(w http.ResponseWriter, r *http.Request) {
 
 
 
- */
 //////////////////////////////////
 // Routing test
 /////////////
@@ -218,4 +220,4 @@ func (c *CoreRouter) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("Not Found"))
 
 	//
-}
+} */

@@ -2,6 +2,7 @@ package webu
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"strings"
@@ -21,6 +22,8 @@ func SpecialHandler(prefix string, sfunc SHttpFunc) http.HandlerFunc {
 		obj, err := sfunc(params...)
 		if err != nil {
 			log.Println("Special func error")
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte(fmt.Sprintln("Error:", err)))
 			return
 		}
 		json.NewEncoder(w).Encode(obj)
