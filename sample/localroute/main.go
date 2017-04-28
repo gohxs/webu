@@ -13,7 +13,6 @@ func InitHome(m webu.Muxer) {
 
 	h := &HomeHandler{}
 	indexHandler := &webu.MethodHandler{Get: h.Index, Post: h.POSTIndex}
-
 	m.Handle("/", indexHandler)
 	m.Handle("/special/", webu.SpecialHandler("/home/special/", h.Special))
 }
@@ -23,15 +22,18 @@ type HomeHandler struct{}
 func (h *HomeHandler) Index(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("GET GET Hello\r\n"))
 }
-
 func (h *HomeHandler) POSTIndex(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("POST POST POST Hello\r\n"))
 }
 func (h *HomeHandler) Special(params ...string) (interface{}, error) {
 	log.Println("Params:", params)
-
+	id := ""
+	if len(params) >= 1 {
+		id = params[0]
+	}
 	return map[string]interface{}{
 		"Result": "Fine",
+		"ID":     id,
 	}, nil
 }
 
@@ -45,7 +47,7 @@ func main() {
 	// Sub route name
 
 	// golang mux compatible
-	chain := webu.NewChain(webu.Logger("HOME"))
+	chain := webu.NewChain(webu.ChainLogger("HOME"))
 
 	// Controller somehow
 	InitHome(&webu.SubMux{mux, "/home", chain})

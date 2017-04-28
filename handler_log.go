@@ -20,16 +20,20 @@ func (l *logHelper) WriteHeader(code int) {
 	l.ResponseWriter.WriteHeader(code)
 }
 
-//Logger middleware for logging handlerFunc
-func Logger(name string) ChainFunc {
+func LogHandler(name string, next http.Handler) http.Handler {
 	llog := log.New(os.Stderr, "["+name+"]: ", 0)
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		l := &logHelper{w, 200}
+		if next != nil {
+			next.ServeHTTP(l, r)
+		}
+		llog.Printf("%s (%d) - %s", r.Method, l.statusCode, r.URL.Path)
+	})
+}
+
+//Logger middleware for logging handlerFunc
+func ChainLogger(name string) ChainFunc {
 	return func(next http.Handler) http.Handler {
-		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			l := &logHelper{w, 200}
-			if next != nil {
-				next.ServeHTTP(l, r)
-			}
-			llog.Printf("%s (%d) - %s", r.Method, l.statusCode, r.URL.Path)
-		})
+		return LogHandler(name, next)
 	}
 }
