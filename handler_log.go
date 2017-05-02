@@ -3,7 +3,6 @@ package webu
 import (
 	"log"
 	"net/http"
-	"os"
 )
 
 /////////////////////////
@@ -21,13 +20,13 @@ func (l *logHelper) WriteHeader(code int) {
 }
 
 func LogHandler(name string, next http.Handler) http.Handler {
-	llog := log.New(os.Stderr, "["+name+"]: ", 0)
+	//llog := log.New(os.Stderr, "["+name+"]: ", 0)
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		l := &logHelper{w, 200}
 		if next != nil {
 			next.ServeHTTP(l, r)
 		}
-		llog.Printf("%s (%d) - %s", r.Method, l.statusCode, r.URL.Path)
+		log.Printf("[%s] %s (%d) - %s", name, r.Method, l.statusCode, r.URL.Path)
 	})
 }
 
