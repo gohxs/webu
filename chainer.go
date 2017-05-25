@@ -38,3 +38,8 @@ func (c *ChainBuilder) Build(handler http.Handler) http.Handler {
 	}
 	return finalHandler
 }
+
+func (c *ChainBuilder) BuildFunc(handlerFunc http.HandlerFunc) http.Handler {
+
+	return c.Build(handlerFunc)
+}
