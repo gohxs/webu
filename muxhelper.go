@@ -9,6 +9,7 @@ import (
 // BaseMuxer just a base for muxers
 type MuxHandler interface {
 	Handle(pattern string, handler http.Handler)
+	HandleFunc(pattern string, handlerFunc func(w http.ResponseWriter, r *http.Request))
 }
 
 // Muxer webu flavoured muxer
@@ -45,8 +46,11 @@ func (m *MuxBase) Handle(pattern string, handler http.Handler) {
 	}
 	//Root will handle
 	m.Parent.Handle(spath, handler)
-
 }
+func (m *MuxBase) HandleFunc(pattern string, handlerFunc func(w http.ResponseWriter, r *http.Request)) {
+	m.Handle(pattern, http.HandlerFunc(handlerFunc))
+}
+
 func (m *MuxBase) Group(pattern string, chain *ChainBuilder) Muxer {
 	return &MuxBase{
 		Parent:  m,
