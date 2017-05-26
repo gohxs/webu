@@ -21,19 +21,16 @@ type MuxPrefix struct {
 
 // MuxWithPrefix returns a compatible http.ServeMux with prefix handling on handle funcs
 func MuxWithPrefix(mux Muxer, pattern string) Muxer {
-	log.Println("Muxer with prefix:", pattern)
 	return &MuxPrefix{mux, pattern}
 }
 
 // Handle a pattern
 func (m *MuxPrefix) Handle(pattern string, handler http.Handler) {
-	log.Println("Handling:", m.prefix+pattern)
 	m.Muxer.Handle(m.prefix+pattern, handler)
 }
 
 // HandleFunc pattern with a func
 func (m *MuxPrefix) HandleFunc(pattern string, handlerFunc func(w http.ResponseWriter, r *http.Request)) {
-	log.Println("Handling func:", m.prefix+pattern)
 	m.Muxer.HandleFunc(m.prefix+pattern, handlerFunc)
 }
 
