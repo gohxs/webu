@@ -6,7 +6,12 @@ import (
 )
 
 //HttpJson answer json
-func HttpJson(w http.ResponseWriter, obj interface{}) error {
-
+func HttpJSON(w http.ResponseWriter, obj interface{}) error {
 	return json.NewEncoder(w).Encode(obj)
+}
+
+func ReadJSON(r *http.Request, obj interface{}) error {
+
+	defer r.Body.Close()
+	return json.NewDecoder(r.Body).Decode(obj)
 }
