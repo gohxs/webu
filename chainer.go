@@ -7,7 +7,7 @@ package webu
 import "net/http"
 
 // ChainFunc
-type ChainFunc func(http.Handler) http.Handler
+type ChainFunc func(http.HandlerFunc) http.HandlerFunc
 
 // NewChain create a chainer
 func NewChain(chain ...ChainFunc) *ChainBuilder {
@@ -28,7 +28,7 @@ func (c *ChainBuilder) Add(chain ...ChainFunc) {
 }
 
 //Build retrieve handler after building
-func (c *ChainBuilder) Build(handler http.Handler) http.Handler {
+func (c *ChainBuilder) Build(handler http.HandlerFunc) http.HandlerFunc {
 	if len(c.chain) == 0 { // Pass trough
 		return handler
 	}
@@ -39,7 +39,6 @@ func (c *ChainBuilder) Build(handler http.Handler) http.Handler {
 	return finalHandler
 }
 
-func (c *ChainBuilder) BuildFunc(handlerFunc http.HandlerFunc) http.Handler {
-
-	return c.Build(handlerFunc)
+func (c *ChainBuilder) BuildFunc(handlerFunc http.HandlerFunc) http.HandlerFunc {
+	return c.Build(handlerFunc).ServeHTTP
 }

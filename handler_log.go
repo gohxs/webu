@@ -32,7 +32,7 @@ func LogHandler(name string, next http.HandlerFunc) http.HandlerFunc {
 
 //Logger middleware for logging handlerFunc
 func ChainLogger(name string) ChainFunc {
-	return func(next http.Handler) http.Handler {
+	return func(next http.HandlerFunc) http.HandlerFunc {
 		return LogHandler(name, next.ServeHTTP)
 	}
 }

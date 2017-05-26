@@ -2,9 +2,10 @@ package webu
 
 import "net/http"
 
-type MethodHandler map[string]http.HandlerFunc
+//Method router
+type Method map[string]http.HandlerFunc
 
-func (m MethodHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (m Method) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	handler, ok := m[r.Method]
 	if ok {
 		handler(w, r)
@@ -12,5 +13,10 @@ func (m MethodHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 	w.WriteHeader(http.StatusMethodNotAllowed)
 	w.Write([]byte("Method not allowed\r\n"))
+}
 
+// MethodHandler returns a func
+func MethodHandler(method string, handlerFunc http.HandlerFunc) http.HandlerFunc {
+
+	return Method{method: handlerFunc}.ServeHTTP
 }

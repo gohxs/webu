@@ -20,6 +20,7 @@ func RouteHome(m webu.Muxer) {
 type HomeHandler struct{}
 
 func (h *HomeHandler) Index(w http.ResponseWriter, r *http.Request) {
+	log.Println("Context:", r.Context().Value("path"))
 	w.Write([]byte("GET GET Hello\r\n"))
 }
 func (h *HomeHandler) POSTIndex(w http.ResponseWriter, r *http.Request) {

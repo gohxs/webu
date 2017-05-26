@@ -1,20 +1,45 @@
 package webu
 
 import (
+	"context"
 	"log"
 	"net/http"
 	"strings"
 )
 
-// BaseMuxer just a base for muxers
-type MuxHandler interface {
+// Muxer http.ServeMux compatible muxer interface
+type Muxer interface {
 	Handle(pattern string, handler http.Handler)
 	HandleFunc(pattern string, handlerFunc func(w http.ResponseWriter, r *http.Request))
 }
 
-// Muxer webu flavoured muxer
-type Muxer interface {
-	MuxHandler
+// MuxPrefix Returns a mux alike with a prefix
+type MuxPrefix struct {
+	Muxer
+	prefix string
+}
+
+// MuxWithPrefix returns a compatible http.ServeMux with prefix handling on handle funcs
+func MuxWithPrefix(mux Muxer, pattern string) Muxer {
+	log.Println("Muxer with prefix:", pattern)
+	return &MuxPrefix{mux, pattern}
+}
+
+// Handle a pattern
+func (m *MuxPrefix) Handle(pattern string, handler http.Handler) {
+	log.Println("Handling:", m.prefix+pattern)
+	m.Muxer.Handle(m.prefix+pattern, handler)
+}
+
+// HandleFunc pattern with a func
+func (m *MuxPrefix) HandleFunc(pattern string, handlerFunc func(w http.ResponseWriter, r *http.Request)) {
+	log.Println("Handling func:", m.prefix+pattern)
+	m.Muxer.HandleFunc(m.prefix+pattern, handlerFunc)
+}
+
+// MuxHelper webu flavoured muxer
+type MuxHelper interface {
+	Muxer
 	Pattern(...string) string
 	Group(pattern string, chain *ChainBuilder) Muxer
 	//HandleFunc(pattern string, handler func(w http.ResponseWriter, r *http.Request))
@@ -31,7 +56,7 @@ func NewMuxHelper(mux *http.ServeMux, chain *ChainBuilder) Muxer {
 
 // Base muxer consists in a pattern and Chain
 type MuxBase struct {
-	Parent  MuxHandler
+	Parent  Muxer
 	Chain   *ChainBuilder
 	pattern string
 }
@@ -42,11 +67,15 @@ func (m *MuxBase) Handle(pattern string, handler http.Handler) {
 
 	// Apply chain for this handler
 	if m.Chain != nil {
-		handler = m.Chain.Build(handler)
+		handler = m.Chain.Build(handler.ServeHTTP)
 	}
 	//Root will handle
-	m.Parent.Handle(spath, handler)
+	m.Parent.Handle(spath, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		ctx := context.WithValue(r.Context(), "path", spath)
+		handler.ServeHTTP(w, r.WithContext(ctx))
+	}))
 }
+
 func (m *MuxBase) HandleFunc(pattern string, handlerFunc func(w http.ResponseWriter, r *http.Request)) {
 	m.Handle(pattern, http.HandlerFunc(handlerFunc))
 }
@@ -63,9 +92,9 @@ func (m *MuxBase) Group(pattern string, chain *ChainBuilder) Muxer {
 func (m *MuxBase) Pattern(sub ...string) string {
 	subPattern := strings.Join(sub, "")
 	switch parent := m.Parent.(type) {
-	case Muxer:
+	case MuxHelper:
 		return parent.Pattern(m.pattern, subPattern) // With us and subPattern
-	case MuxHandler:
+	case Muxer:
 		res := m.pattern + subPattern // us hand sub too
 		log.Printf("[%s:MuxHandler] Base Handler, sub: %s", m.pattern, res)
 		return res
