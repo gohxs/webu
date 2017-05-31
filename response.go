@@ -2,6 +2,7 @@ package webu
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 )
 
@@ -16,7 +17,8 @@ func ReadJSON(r *http.Request, obj interface{}) error {
 	return json.NewDecoder(r.Body).Decode(obj)
 }
 
-func WriteStatus(w http.ResponseWriter, code int) {
+func WriteStatus(w http.ResponseWriter, code int, extras ...interface{}) {
 	w.WriteHeader(code)
-	WriteJSON(w, http.StatusText(code))
+	extra := fmt.Sprint(extras)
+	WriteJSON(w, http.StatusText(code)+"\r\n"+extra)
 }
