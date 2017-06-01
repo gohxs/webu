@@ -5,6 +5,8 @@ import (
 	"log"
 	"net/http"
 	"strings"
+
+	"dev.hexasoftware.com/hxs/webu/chain"
 )
 
 // Muxer http.ServeMux compatible muxer interface
@@ -38,15 +40,15 @@ func (m *MuxPrefix) HandleFunc(pattern string, handlerFunc func(w http.ResponseW
 type MuxHelper interface {
 	Muxer
 	Pattern(...string) string
-	Group(pattern string, chain *Chain) Muxer
+	Group(pattern string, ch *chain.Chain) Muxer
 	//HandleFunc(pattern string, handler func(w http.ResponseWriter, r *http.Request))
 }
 
 // NewMuxHelper Create a New helper mux
-func NewMuxHelper(mux *http.ServeMux, chain *Chain) Muxer {
+func NewMuxHelper(mux *http.ServeMux, ch *chain.Chain) Muxer {
 	return &MuxBase{
 		Parent:  mux,
-		Chain:   chain,
+		Chain:   ch,
 		pattern: "",
 	}
 }
@@ -54,7 +56,7 @@ func NewMuxHelper(mux *http.ServeMux, chain *Chain) Muxer {
 // Base muxer consists in a pattern and Chain
 type MuxBase struct {
 	Parent  Muxer
-	Chain   *Chain
+	Chain   *chain.Chain
 	pattern string
 }
 
@@ -77,10 +79,10 @@ func (m *MuxBase) HandleFunc(pattern string, handlerFunc func(w http.ResponseWri
 	m.Handle(pattern, http.HandlerFunc(handlerFunc))
 }
 
-func (m *MuxBase) Group(pattern string, chain *Chain) Muxer {
+func (m *MuxBase) Group(pattern string, ch *chain.Chain) Muxer {
 	return &MuxBase{
 		Parent:  m,
-		Chain:   chain,
+		Chain:   ch,
 		pattern: pattern,
 	}
 }
