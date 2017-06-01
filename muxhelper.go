@@ -38,12 +38,12 @@ func (m *MuxPrefix) HandleFunc(pattern string, handlerFunc func(w http.ResponseW
 type MuxHelper interface {
 	Muxer
 	Pattern(...string) string
-	Group(pattern string, chain *ChainBuilder) Muxer
+	Group(pattern string, chain *Chain) Muxer
 	//HandleFunc(pattern string, handler func(w http.ResponseWriter, r *http.Request))
 }
 
 // NewMuxHelper Create a New helper mux
-func NewMuxHelper(mux *http.ServeMux, chain *ChainBuilder) Muxer {
+func NewMuxHelper(mux *http.ServeMux, chain *Chain) Muxer {
 	return &MuxBase{
 		Parent:  mux,
 		Chain:   chain,
@@ -54,7 +54,7 @@ func NewMuxHelper(mux *http.ServeMux, chain *ChainBuilder) Muxer {
 // Base muxer consists in a pattern and Chain
 type MuxBase struct {
 	Parent  Muxer
-	Chain   *ChainBuilder
+	Chain   *Chain
 	pattern string
 }
 
@@ -77,7 +77,7 @@ func (m *MuxBase) HandleFunc(pattern string, handlerFunc func(w http.ResponseWri
 	m.Handle(pattern, http.HandlerFunc(handlerFunc))
 }
 
-func (m *MuxBase) Group(pattern string, chain *ChainBuilder) Muxer {
+func (m *MuxBase) Group(pattern string, chain *Chain) Muxer {
 	return &MuxBase{
 		Parent:  m,
 		Chain:   chain,
@@ -107,7 +107,7 @@ func (m *MuxBase) Pattern(sub ...string) string {
 type MuxHelper struct {
 	Mux     BaseMuxer // HttpMuxer
 	pattern string    // Base pattern
-	Chain   *ChainBuilder
+	Chain   *Chain
 }
 
 //Handle handle http implementation
@@ -141,7 +141,7 @@ func (m *MuxHelper) Group(pattern string) *MuxGroup {
 type MuxGroup struct {
 	Parent  Muxer
 	pattern string
-	Chain   *ChainBuilder
+	Chain   *Chain
 }
 
 //Handle Implementation counting Parent muxers
