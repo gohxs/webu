@@ -38,8 +38,12 @@ func main() {
 	mux := http.NewServeMux()
 
 	chain := webu.NewChain(chainOne, chainTwo, chainThree)
-
 	mux.HandleFunc("/", chain.Build(lastHandler))
+
+	// chaining chains
+
+	nchain := webu.NewChain(chainOne, chain.Build)
+	mux.HandleFunc("/sub", nchain.Build(lastHandler))
 
 	http.ListenAndServe(":8001", mux)
 

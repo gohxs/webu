@@ -3,6 +3,8 @@ package webu
 import (
 	"log"
 	"net/http"
+
+	"dev.hexasoftware.com/hxs/webu/chain"
 )
 
 /////////////////////////
@@ -31,7 +33,7 @@ func LogHandler(name string, next http.HandlerFunc) http.HandlerFunc {
 }
 
 //Logger middleware for logging handlerFunc
-func ChainLogger(name string) ChainFunc {
+func ChainLogger(name string) chain.ChainFunc {
 	return func(next http.HandlerFunc) http.HandlerFunc {
 		return LogHandler(name, next.ServeHTTP)
 	}
