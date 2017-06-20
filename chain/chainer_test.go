@@ -1,7 +1,6 @@
 package chain_test
 
 import (
-	"log"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -20,11 +19,10 @@ func chainTest(t *testing.T, name string) chain.Func {
 	}
 }
 
-func lastHandler(w http.ResponseWriter, r *http.Request) {
-	log.Println("Final")
-}
-
 func TestOrder(t *testing.T) {
+	lastHandler := func(w http.ResponseWriter, r *http.Request) {
+		t.Log("Final")
+	}
 
 	mux := http.NewServeMux()
 

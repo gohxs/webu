@@ -12,3 +12,7 @@ m.Handle("/test", webu.SpecialHandler(m.Pattern("/test"), SpecialFactory, "Index
 m.HandleSpecial("/test",Factory,"Method")
 ```
 
+Changes:
+20-06-2017 Added fetchParam function
+
+

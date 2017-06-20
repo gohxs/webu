@@ -4,6 +4,7 @@
 package chain
 
 import (
+	"log"
 	"net/http"
 	"reflect"
 )
@@ -48,6 +49,22 @@ func (c *Chain) Add(chain ...interface{}) {
 	}
 
 	//c.chain = append(c.chain, chain...)
+}
+
+func (c *Chain) TraceBuild(handler http.HandlerFunc) http.HandlerFunc {
+	if len(c.chain) == 0 { // Pass trough
+		return handler
+	}
+	finalHandler := c.chain[len(c.chain)-1](handler) // last
+	for i := len(c.chain) - 2; i >= 0; i-- {
+		v := c.chain[i]
+		finalHandler = v(func(w http.ResponseWriter, r *http.Request) {
+			log.Println("Executing handler:", finalHandler)
+			finalHandler(w, r)
+		})
+	}
+	return finalHandler
+
 }
 
 //Build retrieve handler after building
