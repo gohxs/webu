@@ -4,14 +4,24 @@ import (
 	"net/http"
 	"os"
 	"path"
+	"strings"
 )
 
 // StaticHandler serves file or execute handler if file not found
 func StaticHandler(assetsPath string, catchHandler http.HandlerFunc) http.HandlerFunc {
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		fpath := r.URL.String()
-		sPath := path.Join(assetsPath, fpath)
+		urlPath := "" // FilePath
+
+		server := r.Context().Value(http.ServerContextKey).(*http.Server)
+		// this is Like solving handler twice
+		mux, ok := server.Handler.(*http.ServeMux)
+		if ok { //
+			_, handlerPath := mux.Handler(r)
+			urlPath = strings.TrimPrefix(r.URL.String(), handlerPath)
+		}
+
+		sPath := path.Join(assetsPath, urlPath)
 
 		fstat, err := os.Stat(sPath)
 		if err != nil || fstat.IsDir() {
