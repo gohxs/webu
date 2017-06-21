@@ -8,7 +8,7 @@ import (
 )
 
 // StaticHandler serves file or execute handler if file not found
-func StaticHandler(assetsPath string, catchHandler http.HandlerFunc) http.HandlerFunc {
+func StaticHandler(assetsPath string, catch interface{}) http.HandlerFunc {
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		urlPath := "" // FilePath
@@ -22,10 +22,15 @@ func StaticHandler(assetsPath string, catchHandler http.HandlerFunc) http.Handle
 		}
 
 		sPath := path.Join(assetsPath, urlPath)
-
 		fstat, err := os.Stat(sPath)
 		if err != nil || fstat.IsDir() {
-			catchHandler(w, r) // catchHandler
+			switch t := catch.(type) {
+			case http.HandlerFunc:
+				t(w, r) // catchHandler
+			case string:
+				http.ServeFile(w, r, path.Join(assetsPath, t))
+			}
+
 			return
 		}
 		http.ServeFile(w, r, sPath)
