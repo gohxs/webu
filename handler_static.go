@@ -22,6 +22,7 @@ func StaticHandler(assetsPath string, catch interface{}) http.HandlerFunc {
 		}
 
 		sPath := path.Join(assetsPath, urlPath)
+
 		fstat, err := os.Stat(sPath)
 		if err != nil || fstat.IsDir() {
 			switch t := catch.(type) {
