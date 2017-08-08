@@ -12,7 +12,8 @@ func main() {
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("/api/", func(w http.ResponseWriter, r *http.Request) {
-		extra := webu.FetchParam(r)
+		extra := webu.Param(r)
+
 		log.Println("Extra:", extra)
 	})
 
