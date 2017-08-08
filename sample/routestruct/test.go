@@ -4,7 +4,7 @@ import (
 	"log"
 	"net/http"
 
-	"dev.hexasoftware.com/hxs/webu"
+	"github.com/gohxs/webu"
 )
 
 func MuxRegister(mux webu.Muxer, routes webu.Routes) {

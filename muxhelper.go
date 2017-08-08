@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"strings"
 
-	"dev.hexasoftware.com/hxs/webu/chain"
+	"github.com/gohxs/webu/chain"
 )
 
 // Muxer http.ServeMux compatible muxer interface

@@ -3,8 +3,6 @@ package main
 import (
 	"log"
 	"net/http"
-
-	"dev.hexasoftware.com/hxs/webu"
 )
 
 func chainOne(next http.HandlerFunc) http.HandlerFunc {

@@ -4,8 +4,8 @@ import (
 	"log"
 	"net/http"
 
-	"dev.hexasoftware.com/hxs/webu"
-	"dev.hexasoftware.com/hxs/webu/chain"
+	"github.com/gohxs/webu"
+	"github.com/gohxs/webu/chain"
 )
 
 func main() {

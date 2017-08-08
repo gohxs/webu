@@ -3,7 +3,7 @@ package webu
 import (
 	"net/http"
 
-	"dev.hexasoftware.com/hxs/webu/chain"
+	"github.com/gohxs/webu/chain"
 )
 
 type Routes []Entry

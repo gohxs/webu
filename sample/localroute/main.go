@@ -4,8 +4,8 @@ import (
 	"log"
 	"net/http"
 
-	"dev.hexasoftware.com/hxs/prettylog"
-	"dev.hexasoftware.com/hxs/webu"
+	"github.com/gohxs/prettylog"
+	"github.com/gohxs/webu"
 )
 
 // The Routing definition for controller
