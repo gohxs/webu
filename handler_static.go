@@ -7,7 +7,9 @@ import (
 	"strings"
 )
 
-// StaticHandler serves file or execute handler if file not found
+//StaticHandler serves file or execute handler if file not found
+// webu.StaticHandler("assets", "index.html") // if not found goes to index.html
+//
 func StaticHandler(assetsPath string, catch interface{}) http.HandlerFunc {
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

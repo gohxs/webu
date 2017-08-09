@@ -21,6 +21,7 @@ func (l *logHelper) WriteHeader(code int) {
 	l.ResponseWriter.WriteHeader(code)
 }
 
+// LogHandler returns an handler that logs output using default logger
 func LogHandler(name string, next http.HandlerFunc) http.HandlerFunc {
 	//llog := log.New(os.Stderr, "["+name+"]: ", 0)
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -28,11 +29,11 @@ func LogHandler(name string, next http.HandlerFunc) http.HandlerFunc {
 		if next != nil {
 			next.ServeHTTP(l, r)
 		}
-		log.Printf("[%s] %s (%d) - %s", name, r.Method, l.statusCode, r.URL.Path)
+		log.Printf("[%s] %s %s - [%d %s]", name, r.Method, r.URL.Path, l.statusCode, http.StatusText(l.statusCode))
 	}
 }
 
-//Logger middleware for logging handlerFunc
+//ChainLogger middleware for chainer
 func ChainLogger(name string) chain.Func {
 	return func(next http.HandlerFunc) http.HandlerFunc {
 		return LogHandler(name, next.ServeHTTP)
