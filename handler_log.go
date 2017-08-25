@@ -1,7 +1,9 @@
 package webu
 
 import (
+	"bufio"
 	"log"
+	"net"
 	"net/http"
 
 	"github.com/gohxs/webu/chain"
@@ -19,6 +21,11 @@ type logHelper struct {
 func (l *logHelper) WriteHeader(code int) {
 	l.statusCode = code
 	l.ResponseWriter.WriteHeader(code)
+}
+
+func (l *logHelper) Hijack() (net.Conn, *bufio.ReadWriter, error) {
+	hijacker := l.ResponseWriter.(http.Hijacker)
+	return hijacker.Hijack()
 }
 
 // LogHandler returns an handler that logs output using default logger
