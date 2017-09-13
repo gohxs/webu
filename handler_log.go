@@ -29,20 +29,19 @@ func (l *logHelper) Hijack() (net.Conn, *bufio.ReadWriter, error) {
 }
 
 // LogHandler returns an handler that logs output using default logger
-func LogHandler(name string, next http.HandlerFunc) http.HandlerFunc {
-	//llog := log.New(os.Stderr, "["+name+"]: ", 0)
+func LogHandler(log *log.Logger, next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		l := &logHelper{w, 200}
 		if next != nil {
 			next.ServeHTTP(l, r)
 		}
-		log.Printf("[%s] %s %s - [%d %s]", name, r.Method, r.URL.Path, l.statusCode, http.StatusText(l.statusCode))
+		log.Printf("%s %s - [%d %s]", r.Method, r.URL.Path, l.statusCode, http.StatusText(l.statusCode))
 	}
 }
 
 //ChainLogger middleware for chainer
-func ChainLogger(name string) chain.Func {
+func ChainLogger(log *log.Logger) chain.Func {
 	return func(next http.HandlerFunc) http.HandlerFunc {
-		return LogHandler(name, next.ServeHTTP)
+		return LogHandler(log, next.ServeHTTP)
 	}
 }
