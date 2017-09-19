@@ -13,17 +13,20 @@ import (
 // Log handler
 /////
 
-type logHelper struct {
+// LogHelper struct to handle write logs
+type LogHelper struct {
 	http.ResponseWriter
 	statusCode int
 }
 
-func (l *logHelper) WriteHeader(code int) {
+// WriteHeader hijack write header to track httpStatus
+func (l *LogHelper) WriteHeader(code int) {
 	l.statusCode = code
 	l.ResponseWriter.WriteHeader(code)
 }
 
-func (l *logHelper) Hijack() (net.Conn, *bufio.ReadWriter, error) {
+// Hijack hihack wrapper for hijacker users (websocket?)
+func (l *LogHelper) Hijack() (net.Conn, *bufio.ReadWriter, error) {
 	hijacker := l.ResponseWriter.(http.Hijacker)
 	return hijacker.Hijack()
 }
@@ -31,7 +34,7 @@ func (l *logHelper) Hijack() (net.Conn, *bufio.ReadWriter, error) {
 // LogHandler returns an handler that logs output using default logger
 func LogHandler(log *log.Logger, next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		l := &logHelper{w, 200}
+		l := &LogHelper{w, 200}
 		if next != nil {
 			next.ServeHTTP(l, r)
 		}
