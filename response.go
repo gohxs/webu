@@ -32,6 +32,6 @@ func ReadJSON(r *http.Request, obj interface{}) error {
 //WriteStatus Writes the httpStatus with StatusText as body
 func WriteStatus(w http.ResponseWriter, code int, extras ...interface{}) {
 	w.WriteHeader(code)
-	extra := fmt.Sprint(extras)
+	extra := fmt.Sprint(extras...)
 	WriteJSON(w, http.StatusText(code)+"\r\n"+extra)
 }
