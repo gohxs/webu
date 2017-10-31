@@ -5,6 +5,7 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"strings"
 
 	"github.com/gohxs/webu/chain"
 )
@@ -38,7 +39,8 @@ func LogHandler(log *log.Logger, next http.HandlerFunc) http.HandlerFunc {
 		if next != nil {
 			next.ServeHTTP(l, r)
 		}
-		log.Printf("%s %s - [%d %s]", r.Method, r.URL.Path, l.statusCode, http.StatusText(l.statusCode))
+		raddr := strings.Split(r.RemoteAddr, ":")[0]
+		log.Printf("(%s) %s %s - [%d %s]", raddr, r.Method, r.URL.Path, l.statusCode, http.StatusText(l.statusCode))
 	}
 }
 

@@ -11,27 +11,24 @@ import (
 )
 
 func ExampleLogHandler() {
-	log.SetFlags(0)
-	log.SetOutput(os.Stdout)
+	llog := log.New(os.Stdout, "[main] ", 0)
 
 	mux := http.NewServeMux()
-	mux.HandleFunc("/", webu.LogHandler("main", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/", webu.LogHandler(llog, func(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("Will log")
-
 	}))
 	s := httptest.NewServer(mux)
 	http.Get(s.URL)
 	// Output:
 	// Will log
-	// [main] GET / - [200 OK]
+	// [main] (127.0.0.1) GET / - [200 OK]
 }
 
 func ExampleLogHandlerNotFound() {
-	log.SetFlags(0)
-	log.SetOutput(os.Stdout)
+	llog := log.New(os.Stdout, "[main] ", 0)
 
 	mux := http.NewServeMux()
-	mux.HandleFunc("/test/", webu.LogHandler("main", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/test/", webu.LogHandler(llog, func(w http.ResponseWriter, r *http.Request) {
 		if len(webu.Params(r)) > 1 {
 			webu.WriteStatus(w, http.StatusExpectationFailed)
 			return
@@ -43,6 +40,6 @@ func ExampleLogHandlerNotFound() {
 	http.Get(s.URL + "/test/100/12")
 	http.Get(s.URL + "/tes") // will not output
 	// Output:
-	// [main] GET /test/ - [404 Not Found]
-	// [main] GET /test/100/12 - [417 Expectation Failed]
+	// [main] (127.0.0.1) GET /test/ - [404 Not Found]
+	// [main] (127.0.0.1) GET /test/100/12 - [417 Expectation Failed]
 }
