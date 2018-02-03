@@ -13,7 +13,7 @@ import (
 func StaticHandler(assetsPath string, catch interface{}) http.HandlerFunc {
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		urlPath := "" // FilePath
+		urlPath := r.URL.String() // FilePath
 
 		server := r.Context().Value(http.ServerContextKey).(*http.Server)
 		// this is Like solving handler twice
