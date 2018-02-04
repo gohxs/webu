@@ -66,7 +66,7 @@ func (m *MuxBase) Handle(pattern string, handler http.Handler) {
 
 	// Apply chain for this handler
 	if m.Chain != nil {
-		handler = m.Chain.Build(handler.ServeHTTP)
+		handler = m.Chain.Build(handler)
 	}
 	//Root will handle
 	m.Parent.Handle(spath, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

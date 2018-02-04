@@ -10,7 +10,7 @@ import (
 )
 
 // Func chain Func type
-type Func func(http.HandlerFunc) http.HandlerFunc
+type Func func(http.Handler) http.Handler
 
 //New create a new chainer
 // Params can be chain.Func, http.HandlerFunc or another chainer
@@ -38,7 +38,7 @@ func (c *Chain) Add(chain ...interface{}) {
 	// Convert whatever to chainFunc
 	for _, v := range chain {
 		switch vt := v.(type) {
-		case func(handler http.HandlerFunc) http.HandlerFunc:
+		case func(handler http.Handler) http.Handler:
 			c.chain = append(c.chain, vt)
 		case Func:
 			c.chain = append(c.chain, vt)
@@ -51,24 +51,25 @@ func (c *Chain) Add(chain ...interface{}) {
 	//c.chain = append(c.chain, chain...)
 }
 
-func (c *Chain) TraceBuild(handler http.HandlerFunc) http.HandlerFunc {
+// TraceBuild profile a chain by logging each handler
+func (c *Chain) TraceBuild(handler http.Handler) http.Handler {
 	if len(c.chain) == 0 { // Pass trough
 		return handler
 	}
 	finalHandler := c.chain[len(c.chain)-1](handler) // last
 	for i := len(c.chain) - 2; i >= 0; i-- {
 		v := c.chain[i]
-		finalHandler = v(func(w http.ResponseWriter, r *http.Request) {
+		finalHandler = v(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			log.Println("Executing handler:", finalHandler)
-			finalHandler(w, r)
-		})
+			finalHandler.ServeHTTP(w, r)
+		}))
 	}
 	return finalHandler
 
 }
 
 //Build retrieve handler after building
-func (c *Chain) Build(handler http.HandlerFunc) http.HandlerFunc {
+func (c *Chain) Build(handler http.Handler) http.Handler {
 	if len(c.chain) == 0 { // Pass trough
 		return handler
 	}
