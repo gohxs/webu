@@ -1,11 +1,8 @@
-Web tools to easyup life
-=========================
-
+# Web tools to easyup life
 
 Auto controller routing
+
 1. Focus on controller and actions, then if necessary middle wares
-
-
 
 example code
 
@@ -16,6 +13,7 @@ mux.Handle(webu.CreateManager("/api/"))
 ```
 
 ## Checking syntax
+
 ```go
 type Home struct {
 	Index webu.Action `webu:"index;GET,POST"`
@@ -30,7 +28,9 @@ func NewHome() *Home {
 	return c
 }
 ```
-Is no diferent than
+
+Is no different than
+
 ```go
 type Home struct{}
 
@@ -41,9 +41,8 @@ func (c *Home) func( w http.ResponseWriter, r * http.Request) {
 
 func (a *App) InitRoutes() {
 	h :=Home{}
-	a.Router().Methods("GET","POST").Path("index").HandlerFunc(&h)	
+	a.Router().Methods("GET","POST").Path("index").HandlerFunc(&h)
 }
 
-	
-```
 
+```
