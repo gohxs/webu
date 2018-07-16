@@ -14,7 +14,7 @@ import (
 func StaticHandler(assetsPath string, catch interface{}) http.HandlerFunc {
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		urlPath := "" // FilePath
+		urlPath := r.URL.String() // FilePath
 
 		// should not be needed
 		server := r.Context().Value(http.ServerContextKey).(*http.Server)

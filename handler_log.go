@@ -46,7 +46,7 @@ func LogHandler(log *log.Logger, next http.HandlerFunc) http.HandlerFunc {
 
 //ChainLogger middleware for chainer
 func ChainLogger(log *log.Logger) chain.Func {
-	return func(next http.HandlerFunc) http.HandlerFunc {
+	return func(next http.Handler) http.Handler {
 		return LogHandler(log, next.ServeHTTP)
 	}
 }
