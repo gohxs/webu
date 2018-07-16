@@ -1,6 +1,7 @@
 package webu
 
 import (
+	"log"
 	"net/http"
 	"os"
 	"path"
@@ -15,12 +16,13 @@ func StaticHandler(assetsPath string, catch interface{}) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		urlPath := "" // FilePath
 
+		// should not be needed
 		server := r.Context().Value(http.ServerContextKey).(*http.Server)
 		// this is Like solving handler twice
 		mux, ok := server.Handler.(*http.ServeMux)
 		if ok { //
 			_, handlerPath := mux.Handler(r)
-			urlPath = strings.TrimPrefix(r.URL.String(), handlerPath)
+			urlPath = strings.TrimPrefix(r.URL.Path, handlerPath)
 		}
 
 		sPath := path.Join(assetsPath, urlPath)
