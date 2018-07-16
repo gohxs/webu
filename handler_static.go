@@ -1,7 +1,6 @@
 package webu
 
 import (
-	"log"
 	"net/http"
 	"os"
 	"path"
